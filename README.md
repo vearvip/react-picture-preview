@@ -21,10 +21,8 @@ yarn add @vearvip/react-picture-preview
 
 ### 导入组件
 
-```javascript
-import React from 'react';
+```javascript 
 import { preview } from '@vearvip/react-picture-preview';
-import '@vearvip/react-picture-preview/dist/index.css';
 ```
 
 ### 使用示例
