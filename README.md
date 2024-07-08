@@ -35,32 +35,58 @@ const imageList = [
   'https://gw.alipayobjects.com/mdn/rms_08e378/afts/img/A*ngiJQaLQELEAAAAAAAAAAABkARQnAQ',
 ];
 
+
 const App = () => {
   return (
-    <>
-      <button
-        onClick={() => {
-          preview({
-            src: imageList[0],
-          });
-        }}
-      >
-        查看图片1
-      </button>
-      <button
-        onClick={() => {
-          preview({
-            src: imageList[1],
-          });
-        }}
-      >
-        查看图片2
-      </button>
-    </>
+    <div>
+      <div>
+
+        <button
+          onClick={() => {
+            preview({
+              src: imageList[0],
+            });
+          }}
+        >
+          查看图片1-单张
+        </button>
+        <button
+          onClick={() => {
+            preview({
+              src: imageList[1],
+            });
+          }}
+        >
+          查看图片2-单张
+        </button>
+      </div>
+      <div>
+
+        <button
+          onClick={() => {
+            preview({
+              src: imageList[0],
+              images: imageList
+            });
+          }}
+        >
+          查看图片1-多张
+        </button>
+        <button
+          onClick={() => {
+            preview({
+              src: imageList[1],
+              images: imageList
+            });
+          }}
+        >
+          查看图片2-多张
+        </button>
+      </div>
+    </div>
   );
 };
 
-export default App;
 ```
 
 ## API
@@ -73,6 +99,7 @@ export default App;
 
 - `options` (Object): 预览选项。
   - `src` (string): 要预览的图片的 URL。
+  - `images` (Array<string>): 图片列表，不传的话就是单张查看，传的话，就是可以上下切换（可选）。
   - `onClose` (Function): 图片查看器关闭时的回调函数（可选）。
 
 
