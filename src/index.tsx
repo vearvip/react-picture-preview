@@ -21,12 +21,22 @@ interface PhotoGalleryProps {
   onClose?: () => void;
 }
 
-const PhotoGallery: React.FC<PhotoGalleryProps> = ({ src, images, onClose }) => {
-  const [visible, setVisible] = useState(true);
+// PhotoGallery 组件定义
+const PhotoGallery: React.FC<PhotoGalleryProps> = ({
+  src,
+  images,
+  onClose,
+}) => {
+  const [visible, setVisible] = useState(true); // 控制图片预览器是否可见
   const [current, setCurrent] = useState(
-    (images || []).findIndex((image) => image === src) || 0,
-  )
+    (images || []).findIndex((image) => image === src) || 0, // 找到当前显示图片的索引
+  );
 
+  /**
+   * 处理图片的下载功能
+   * @async
+   * @function
+   */
   const handleDownload = async () => {
     try {
       const response = await fetch(src);
@@ -45,158 +55,162 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ src, images, onClose }) => 
     }
   };
 
-  return (
-    (images && Array.isArray(images) && images.length > 0)
-      ?
-      <Image.PreviewGroup
-        preview={{
-          visible,
-          current: current,
-          onVisibleChange: (visible: boolean) => {
-            setVisible(visible);
-            if (!visible && onClose) {
-              onClose();
-            }
+  return images && Array.isArray(images) && images.length > 0 ? ( // 判断 images 是否存在并且是否为数组
+    // 使用 rc-image 的 PreviewGroup 显示图片组
+    <Image.PreviewGroup
+      preview={{
+        visible,
+        current: current, // 当前显示图片的索引
+        onVisibleChange: (visible: boolean) => {
+          setVisible(visible);
+          if (!visible && onClose) {
+            onClose();
+          }
+        },
+        onChange: (current: number) => {
+          setCurrent(current);
+        },
+        icons: {
+          close: <CloseOutlined />,
+          left: <LeftOutlined />,
+          right: <RightOutlined />,
+        },
+        toolbarRender: (
+          _,
+          {
+            actions: {
+              onFlipY,
+              onFlipX,
+              onRotateLeft,
+              onRotateRight,
+              onZoomOut,
+              onZoomIn,
+            },
           },
-          onChange: (current: number) => {
-            setCurrent(current);
-          },
-          icons: {
-            close: <CloseOutlined />,
-            left: <LeftOutlined />,
-            right: <RightOutlined />
-          },
-          toolbarRender: (
-            _,
-            {
-              actions: {
-                onFlipY,
-                onFlipX,
-                onRotateLeft,
-                onRotateRight,
-                onZoomOut,
-                onZoomIn,
-              },
-            }
-          ) => {
-            const buttons = {
-              rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
-              rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
-              zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
-              zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
-              flipX: <SwapOutlined onClick={onFlipX} />,
-              flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
-              download: (
-                <DownloadOutlined key="download" onClick={handleDownload} />
-              ),
-            };
-            return (
-              <div
-                style={{
-                  display: "flex",
-                  color: "#bbb",
-                  background: "rgba(0, 0, 0, 0.45)",
-                  borderRadius: "100px",
-                  padding: "0 20px",
-                }}
-              >
-                {Object.keys(buttons).map((key, index) => (
-                  <div
-                    key={key}
-                    style={{
-                      padding: "10px",
-                      cursor: "pointer",
-                      marginLeft: index === 0 ? 0 : "10px",
-                      fontSize: "18px",
-                    }}
-                  >
-                    {buttons[key]}
-                  </div>
-                ))}
-              </div>
-            );
-          },
-        }}
-      >
-        {
-          images.map(src => {
-            return <Image
-              key={src}
-              src={src}
+        ) => {
+          // 自定义工具栏按钮
+          const buttons = {
+            rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
+            rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
+            zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
+            zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
+            flipX: <SwapOutlined onClick={onFlipX} />,
+            flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
+            download: (
+              <DownloadOutlined key="download" onClick={handleDownload} />
+            ),
+          };
+          return (
+            <div
               style={{
-                display: "none",
-              }} />
-          })
-        }
-      </Image.PreviewGroup>
-      : <Image
-        src={src}
-        preview={{
-          visible,
-          onVisibleChange: (visible: boolean) => {
-            setVisible(visible);
-            if (!visible && onClose) {
-              onClose();
-            }
+                display: "flex",
+                color: "#bbb",
+                background: "rgba(0, 0, 0, 0.45)",
+                borderRadius: "100px",
+                padding: "0 20px",
+              }}
+            >
+              {Object.keys(buttons).map((key, index) => (
+                <div
+                  key={key}
+                  style={{
+                    padding: "10px",
+                    cursor: "pointer",
+                    marginLeft: index === 0 ? 0 : "10px",
+                    fontSize: "18px",
+                  }}
+                >
+                  {buttons[key]}
+                </div>
+              ))}
+            </div>
+          );
+        },
+      }}
+    >
+      {images.map((src) => {
+        return (
+          <Image
+            key={src}
+            src={src}
+            style={{
+              display: "none",
+            }}
+          />
+        );
+      })}
+    </Image.PreviewGroup>
+  ) : (
+    // 如果没有 images 或 images 为空数组，就显示单独的图片
+    <Image
+      src={src}
+      preview={{
+        visible,
+        onVisibleChange: (visible: boolean) => {
+          setVisible(visible);
+          if (!visible && onClose) {
+            onClose();
+          }
+        },
+        icons: {
+          close: <CloseOutlined />,
+        },
+        toolbarRender: (
+          _,
+          {
+            actions: {
+              onFlipY,
+              onFlipX,
+              onRotateLeft,
+              onRotateRight,
+              onZoomOut,
+              onZoomIn,
+            },
           },
-          icons: {
-            close: <CloseOutlined />,
-          },
-          toolbarRender: (
-            _,
-            {
-              actions: {
-                onFlipY,
-                onFlipX,
-                onRotateLeft,
-                onRotateRight,
-                onZoomOut,
-                onZoomIn,
-              },
-            }
-          ) => {
-            const buttons = {
-              rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
-              rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
-              zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
-              zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
-              flipX: <SwapOutlined onClick={onFlipX} />,
-              flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
-              download: (
-                <DownloadOutlined key="download" onClick={handleDownload} />
-              ),
-            };
-            return (
-              <div
-                style={{
-                  display: "flex",
-                  color: "#bbb",
-                  background: "rgba(0, 0, 0, 0.45)",
-                  borderRadius: "100px",
-                  padding: "0 20px",
-                }}
-              >
-                {Object.keys(buttons).map((key, index) => (
-                  <div
-                    key={key}
-                    style={{
-                      padding: "10px",
-                      cursor: "pointer",
-                      marginLeft: index === 0 ? 0 : "10px",
-                      fontSize: "18px",
-                    }}
-                  >
-                    {buttons[key]}
-                  </div>
-                ))}
-              </div>
-            );
-          },
-        }}
-        style={{
-          display: "none",
-        }}
-      />
+        ) => {
+          // 自定义工具栏按钮
+          const buttons = {
+            rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
+            rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
+            zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
+            zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
+            flipX: <SwapOutlined onClick={onFlipX} />,
+            flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
+            download: (
+              <DownloadOutlined key="download" onClick={handleDownload} />
+            ),
+          };
+          return (
+            <div
+              style={{
+                display: "flex",
+                color: "#bbb",
+                background: "rgba(0, 0, 0, 0.45)",
+                borderRadius: "100px",
+                padding: "0 20px",
+              }}
+            >
+              {Object.keys(buttons).map((key, index) => (
+                <div
+                  key={key}
+                  style={{
+                    padding: "10px",
+                    cursor: "pointer",
+                    marginLeft: index === 0 ? 0 : "10px",
+                    fontSize: "18px",
+                  }}
+                >
+                  {buttons[key]}
+                </div>
+              ))}
+            </div>
+          );
+        },
+      }}
+      style={{
+        display: "none",
+      }}
+    />
   );
 };
 
@@ -207,6 +221,10 @@ interface PreviewOptions {
   onClose?: () => void;
 }
 
+/**
+ * 预览图片函数，显示图片查看器
+ * @param {PreviewOptions} options - 预览选项
+ */
 export const preview = ({ src, images, onClose }: PreviewOptions) => {
   const photoGalleryContainer = document.createElement("div");
   document.body.appendChild(photoGalleryContainer);
@@ -223,6 +241,6 @@ export const preview = ({ src, images, onClose }: PreviewOptions) => {
           document.body.removeChild(photoGalleryContainer); // 清理创建的容器
         }, 300); // 退场动画刚好是0.3s
       }}
-    />
+    />,
   );
 };
