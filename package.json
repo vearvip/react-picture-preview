@@ -1,9 +1,34 @@
 {
   "name": "@vearvip/react-picture-preview",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "一个基于 React 和 rc-image 的图片预览组件，具备图片旋转、翻转、缩放和下载等功能。",
-  "type": "module",
-  "main": "./dist/index.js",
+  "files": [
+    "esm"
+  ],
+  "main": "esm/index.js",
+  "module": "esm/index.js",
+  "types": "esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js"
+    },
+    "./*": "./*"
+  },
+  "sideEffects": [
+    "dist/*",
+    "*.scss",
+    "*.less",
+    "*.css"
+  ],
+  "scripts": {
+    "start": "ice-pkg start",
+    "build": "ice-pkg build",
+    "prepublishOnly": "npm run build",
+    "eslint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./",
+    "eslint:fix": "npm run eslint -- --fix",
+    "stylelint": "stylelint \"**/*.{css,scss,less}\"",
+    "lint": "npm run eslint && npm run stylelint"
+  },
   "keywords": [
     "图片预览",
     "照片预览",
@@ -14,27 +39,25 @@
     "react",
     "component"
   ],
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
-  },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
-    "rc-image": "^7.10.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "@ice/jsx-runtime": "^0.2.0",
+    "@swc/helpers": "^0.5.1",
+    "rc-image": "^7.10.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.2",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.7",
-    "vite": "^5.3.1"
+    "@applint/spec": "^1.2.3",
+    "@ice/pkg": "^1.0.0",
+    "@ice/pkg-plugin-docusaurus": "^1.0.0",
+    "eslint": "^8.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "stylelint": "^15.0.0"
+  },
+  "peerDependencies": {
+    "react": "^17 || ^18"
   },
   "publishConfig": {
     "access": "public"
