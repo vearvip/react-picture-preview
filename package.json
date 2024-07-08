@@ -67,5 +67,17 @@
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vearvip/react-picture-preview.git"
+  },
+  "author": "vearvip",
+  "bugs": {
+    "url": "https://github.com/vearvip/react-picture-preview/issues"
+  },
+  "homepage": "https://github.com/vearvip/react-picture-preview#readme"
 }
