@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "rc-image";
-import ReactDOM from "react-dom";
 import "rc-image/assets/index.css";
 import {
   CloseOutlined,
@@ -11,6 +10,7 @@ import {
   ZoomOutOutlined,
   DownloadOutlined,
 } from "@ant-design/icons";
+import { createRoot } from "react-dom/client";
 
 /**
  * PhotoGallery组件渲染一个图片查看器。
@@ -149,11 +149,12 @@ export const preview = ({ src, onClose }) => {
       onClose={() => {
         onClose && onClose();
         setTimeout(() => {
-          ReactDOM.unmountComponentAtNode(photoGalleryContainer);
+          root.unmount(photoGalleryContainer);
           document.body.removeChild(photoGalleryContainer); // 清理创建的容器
         }, 300); // 退场动画刚好是0.3s
       }}
     />
   );
-  ReactDOM.render(photoGallery, photoGalleryContainer);
+  const root = createRoot(photoGalleryContainer);
+  root.render(photoGallery);
 };
