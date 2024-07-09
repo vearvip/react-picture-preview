@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Image from "rc-image";
+import Image, { ImagePreviewType } from "rc-image";
 import "rc-image/assets/index.css";
 import {
   CloseOutlined,
@@ -13,30 +13,35 @@ import {
   RightOutlined,
 } from "@ant-design/icons";
 import { createRoot } from "react-dom/client";
+import { PreviewGroupPreview } from "rc-image/lib/PreviewGroup";
 
 // 定义组件的 Props 类型
 interface PhotoGalleryProps {
   src: string;
   images?: string[];
   onClose?: () => void;
+  actions?: {
+    rotateLeft?: boolean;
+    rotateRight?: boolean;
+    zoomIn?: boolean;
+    zoomOut?: boolean;
+    flipX?: boolean;
+    flipY?: boolean;
+    download?: boolean;
+  };
 }
 
-// PhotoGallery 组件定义
 const PhotoGallery: React.FC<PhotoGalleryProps> = ({
   src,
   images,
   onClose,
+  actions,
 }) => {
-  const [visible, setVisible] = useState(true); // 控制图片预览器是否可见
+  const [visible, setVisible] = useState(true);
   const [current, setCurrent] = useState(
-    (images || []).findIndex((image) => image === src) || 0, // 找到当前显示图片的索引
+    (images || []).findIndex((image) => image === src) || 0,
   );
 
-  /**
-   * 处理图片的下载功能
-   * @async
-   * @function
-   */
   const handleDownload = async () => {
     try {
       const response = await fetch(src);
@@ -55,79 +60,84 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
     }
   };
 
-  return images && Array.isArray(images) && images.length > 0 ? ( // 判断 images 是否存在并且是否为数组
-    // 使用 rc-image 的 PreviewGroup 显示图片组
-    <Image.PreviewGroup
-      preview={{
-        visible,
-        current: current, // 当前显示图片的索引
-        onVisibleChange: (visible: boolean) => {
-          setVisible(visible);
-          if (!visible && onClose) {
-            onClose();
+  const previewOptions: PreviewGroupPreview = {
+    visible,
+    current: current,
+    onVisibleChange: (visible: boolean) => {
+      setVisible(visible);
+      if (!visible && onClose) {
+        onClose();
+      }
+    },
+    onChange: (current: number) => {
+      setCurrent(current);
+    },
+    icons: {
+      close: <CloseOutlined />,
+      left: <LeftOutlined />,
+      right: <RightOutlined />,
+    },
+    toolbarRender: (
+      _,
+      {
+        actions: {
+          onFlipY,
+          onFlipX,
+          onRotateLeft,
+          onRotateRight,
+          onZoomOut,
+          onZoomIn,
+        },
+      },
+    ) => {
+      let buttons = {
+        rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
+        rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
+        zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
+        zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
+        flipX: <SwapOutlined onClick={onFlipX} />,
+        flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
+        download: <DownloadOutlined key="download" onClick={handleDownload} />,
+      };
+      // 过滤
+      if (actions) {
+        for (const key in actions) {
+          if (!actions[key]) {
+            delete buttons[key];
           }
-        },
-        onChange: (current: number) => {
-          setCurrent(current);
-        },
-        icons: {
-          close: <CloseOutlined />,
-          left: <LeftOutlined />,
-          right: <RightOutlined />,
-        },
-        toolbarRender: (
-          _,
-          {
-            actions: {
-              onFlipY,
-              onFlipX,
-              onRotateLeft,
-              onRotateRight,
-              onZoomOut,
-              onZoomIn,
-            },
-          },
-        ) => {
-          // 自定义工具栏按钮
-          const buttons = {
-            rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
-            rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
-            zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
-            zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
-            flipX: <SwapOutlined onClick={onFlipX} />,
-            flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
-            download: (
-              <DownloadOutlined key="download" onClick={handleDownload} />
-            ),
-          };
-          return (
+        }
+      }
+      console.log("buttons", buttons);
+      return (
+        <div
+          style={{
+            display: "flex",
+            color: "#bbb",
+            background: "rgba(0, 0, 0, 0.45)",
+            borderRadius: "100px",
+            padding: "0 20px",
+          }}
+        >
+          {Object.keys(buttons).map((key, index) => (
             <div
+              key={key}
               style={{
-                display: "flex",
-                color: "#bbb",
-                background: "rgba(0, 0, 0, 0.45)",
-                borderRadius: "100px",
-                padding: "0 20px",
+                padding: "10px",
+                cursor: "pointer",
+                marginLeft: index === 0 ? 0 : "10px",
+                fontSize: "18px",
               }}
             >
-              {Object.keys(buttons).map((key, index) => (
-                <div
-                  key={key}
-                  style={{
-                    padding: "10px",
-                    cursor: "pointer",
-                    marginLeft: index === 0 ? 0 : "10px",
-                    fontSize: "18px",
-                  }}
-                >
-                  {buttons[key]}
-                </div>
-              ))}
+              {buttons[key]}
             </div>
-          );
-        },
-      }}
-    >
+          ))}
+        </div>
+      );
+    },
+  };
+
+  return images && Array.isArray(images) && images.length > 0 ? (
+    <Image.PreviewGroup preview={previewOptions}>
       {images.map((src) => {
         return (
           <Image
@@ -141,72 +151,9 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({
       })}
     </Image.PreviewGroup>
   ) : (
-    // 如果没有 images 或 images 为空数组，就显示单独的图片
     <Image
       src={src}
-      preview={{
-        visible,
-        onVisibleChange: (visible: boolean) => {
-          setVisible(visible);
-          if (!visible && onClose) {
-            onClose();
-          }
-        },
-        icons: {
-          close: <CloseOutlined />,
-        },
-        toolbarRender: (
-          _,
-          {
-            actions: {
-              onFlipY,
-              onFlipX,
-              onRotateLeft,
-              onRotateRight,
-              onZoomOut,
-              onZoomIn,
-            },
-          },
-        ) => {
-          // 自定义工具栏按钮
-          const buttons = {
-            rotateLeft: <RotateLeftOutlined onClick={onRotateLeft} />,
-            rotateRight: <RotateRightOutlined onClick={onRotateRight} />,
-            zoomIn: <ZoomInOutlined onClick={onZoomIn} />,
-            zoomOut: <ZoomOutOutlined onClick={onZoomOut} />,
-            flipX: <SwapOutlined onClick={onFlipX} />,
-            flipY: <SwapOutlined rotate={90} onClick={onFlipY} />,
-            download: (
-              <DownloadOutlined key="download" onClick={handleDownload} />
-            ),
-          };
-          return (
-            <div
-              style={{
-                display: "flex",
-                color: "#bbb",
-                background: "rgba(0, 0, 0, 0.45)",
-                borderRadius: "100px",
-                padding: "0 20px",
-              }}
-            >
-              {Object.keys(buttons).map((key, index) => (
-                <div
-                  key={key}
-                  style={{
-                    padding: "10px",
-                    cursor: "pointer",
-                    marginLeft: index === 0 ? 0 : "10px",
-                    fontSize: "18px",
-                  }}
-                >
-                  {buttons[key]}
-                </div>
-              ))}
-            </div>
-          );
-        },
-      }}
+      preview={previewOptions as ImagePreviewType}
       style={{
         display: "none",
       }}
@@ -219,13 +166,18 @@ interface PreviewOptions {
   src: string;
   images?: string[];
   onClose?: () => void;
+  actions?: {
+    rotateLeft?: boolean;
+    rotateRight?: boolean;
+    zoomIn?: boolean;
+    zoomOut?: boolean;
+    flipX?: boolean;
+    flipY?: boolean;
+    download?: boolean;
+  };
 }
 
-/**
- * 预览图片函数，显示图片查看器
- * @param {PreviewOptions} options - 预览选项
- */
-export const preview = ({ src, images, onClose }: PreviewOptions) => {
+export const preview = ({ src, images, onClose, actions }: PreviewOptions) => {
   const photoGalleryContainer = document.createElement("div");
   document.body.appendChild(photoGalleryContainer);
 
@@ -234,6 +186,7 @@ export const preview = ({ src, images, onClose }: PreviewOptions) => {
     <PhotoGallery
       src={src}
       images={images}
+      actions={actions}
       onClose={() => {
         if (onClose) onClose();
         setTimeout(() => {
