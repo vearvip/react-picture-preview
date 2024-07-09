@@ -5,7 +5,7 @@ node_modules/
 
 # production
 .docusaurus/
-build/
+# build/
 dist/
 tmp/
 cjs/
