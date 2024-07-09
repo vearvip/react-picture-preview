@@ -1,6 +1,6 @@
 {
   "name": "@vearvip/react-picture-preview",
-  "version": "0.4.0",
+  "version": "1.0.0-beta.3",
   "description": "一个基于 React 和 rc-image 的图片预览组件，具备图片旋转、翻转、缩放和下载等功能。",
   "files": [
     "esm"
@@ -46,14 +46,14 @@
     "rc-image": "^7.10.0"
   },
   "devDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "@applint/spec": "^1.2.3",
     "@ice/pkg": "^1.0.0",
     "@ice/pkg-plugin-docusaurus": "^1.4.18",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "eslint": "^8.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
     "stylelint": "^15.0.0"
   },
   "peerDependencies": {

@@ -12,7 +12,8 @@ import {
   LeftOutlined,
   RightOutlined,
 } from "@ant-design/icons";
-import { createRoot } from "react-dom/client";
+// import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
 import { PreviewGroupPreview } from "rc-image/lib/PreviewGroup";
 
 // 定义组件的 Props 类型
@@ -180,9 +181,7 @@ interface PreviewOptions {
 export const preview = ({ src, images, onClose, actions }: PreviewOptions) => {
   const photoGalleryContainer = document.createElement("div");
   document.body.appendChild(photoGalleryContainer);
-
-  const root = createRoot(photoGalleryContainer);
-  root.render(
+  const photoGallery = (
     <PhotoGallery
       src={src}
       images={images}
@@ -190,10 +189,11 @@ export const preview = ({ src, images, onClose, actions }: PreviewOptions) => {
       onClose={() => {
         if (onClose) onClose();
         setTimeout(() => {
-          root.unmount();
+          ReactDOM.unmountComponentAtNode(photoGalleryContainer);
           document.body.removeChild(photoGalleryContainer); // 清理创建的容器
         }, 300); // 退场动画刚好是0.3s
       }}
-    />,
+    />
   );
+  ReactDOM.render(photoGallery, photoGalleryContainer);
 };
