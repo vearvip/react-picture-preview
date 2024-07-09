@@ -23,13 +23,13 @@ yarn add @vearvip/react-picture-preview
 
 ### 导入组件
 
-```javascript 
+```jsx 
 import { preview } from '@vearvip/react-picture-preview';
 ```
 
 ### 使用示例
 
-```javascript
+```jsx
 import React from 'react';
 import { preview } from '@vearvip/react-picture-preview';
 
@@ -48,6 +48,15 @@ const App = () => {
           onClick={() => {
             preview({
               src: imageList[0],
+              actions: {
+                rotateLeft: false,
+                rotateRight: false,
+                zoomIn: false,
+                zoomOut: false,
+                flipX: false,
+                flipY: false,
+                // download: false
+              }
             });
           }}
         >
@@ -90,20 +99,35 @@ const App = () => {
   );
 };
 
+export default App;
 ```
 
 ## API
 
-### preview(options)
+### preview(options) 函数参数
 
-打开图片预览组件。
+`preview` 函数接收一个对象，该对象包含以下属性：
 
-#### 参数
+| 属性名    | 类型     | 必填  | 描述                                                                                                                  |
+| --------- | -------- | ----- | --------------------------------------------------------------------------------------------------------------------- |
+| src       | string   | 是    | 要预览的图片地址。                                                                                                     |
+| images    | string[] | 否    | 图片地址数组，如果不提供，则预览单张图片。                                                                               |
+| onClose   | function | 否    | 关闭预览时的回调函数。                                                                                                  |
+| actions   | object   | 否    | 配置哪些功能按钮是可用的，具体属性详见下表。                                                                               |
 
-- `options` (Object): 预览选项。
-  - `src` (string): 要预览的图片的 URL。
-  - `images` (Array<string>): 图片列表，不传的话就是单张查看，传的话，就是可以上下切换（可选）。
-  - `onClose` (Function): 图片查看器关闭时的回调函数（可选）。
+### actions 对象属性
+
+`actions` 对象包含以下可选布尔属性，指示对应的功能按钮是否显示（默认都显示）：
+
+| 属性名      | 类型  | 描述                                 |
+| ----------- | ----- | ------------------------------------ |
+| rotateLeft  | bool  | 是否显示向左旋转按钮                 |
+| rotateRight | bool  | 是否显示向右旋转按钮                 |
+| zoomIn      | bool  | 是否显示放大按钮                     |
+| zoomOut     | bool  | 是否显示缩小按钮                     |
+| flipX       | bool  | 是否显示水平翻转按钮                 |
+| flipY       | bool  | 是否显示垂直翻转按钮                 |
+| download    | bool  | 是否显示下载按钮                     |
 
 
 

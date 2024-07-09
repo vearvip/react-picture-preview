@@ -5,4 +5,9 @@ export default defineConfig({
   bundle: {
     formats: ["esm"],
   },
+  plugins: [
+    [
+      '@ice/pkg-plugin-docusaurus',  
+    ],
+  ],
 });
