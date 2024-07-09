@@ -2,6 +2,9 @@
 
 `@vearvip/react-picture-preview` 是一个基于 `React` 和 `rc-image` 的图片预览组件，具备图片旋转、翻转、缩放和下载等功能。
 
+演示：
+[Demo](https://rpktvx.csb.app/)
+
 ## 安装
 
 使用 npm 安装：
